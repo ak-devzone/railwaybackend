@@ -1,0 +1,7 @@
+node_modules
+firebase-credentials.json
+frontend/firebase-credentials.json
+*.json
+.env
+.env.example
+.env.example.celery
