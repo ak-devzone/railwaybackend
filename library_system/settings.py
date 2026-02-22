@@ -234,6 +234,12 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Digital Library <noreplydigitallibrarysystemm@gmail.com>')
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@digitallibrary.com')
 
+# Prevent infinite hangs on SMTP calls (10 seconds)
+EMAIL_TIMEOUT = 10
+
+# Tracking deployment version
+BUILD_VERSION = os.getenv('RAILWAY_GIT_COMMIT_SHA', 'local-dev')[:7]
+
 # Celery Configuration
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')

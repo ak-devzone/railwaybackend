@@ -87,12 +87,18 @@ def get_user_details(request, user_id):
     """Get detailed user information"""
     try:
         try:
+            # Try lookup by Firebase UID (preferred)
             user = UserProfile.objects.get(uid=user_id)
         except UserProfile.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'User not found'
-            }, status=404)
+            # Fallback for some frontend components that might pass Student ID
+            try:
+                user = UserProfile.objects.get(student_id=user_id)
+            except UserProfile.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'error': f'User {user_id} not found in database',
+                    'hint': 'Check if the ID is correct or if synchronization is pending.'
+                }, status=404)
         
         user_data = {
             'id': user.uid,

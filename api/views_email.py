@@ -72,8 +72,9 @@ Digital Library Team
         logger.error(f"Failed to send email: {e}")
         return Response({
             'error': str(e),
-            'type': 'WelcomeEmailError',
-            'detail': 'Check Firebase credentials and SMTP settings on Railway.'
+            'type': 'EmailSendingError',
+            'detail': 'SMTP Timeout or Configuration Issue. Check Railway Environment Variables.',
+            'version': getattr(settings, 'BUILD_VERSION', 'local')
         }, status=500)
 
 @api_view(['POST'])
@@ -143,6 +144,7 @@ Digital Library Support Team
         logger.error(f"Failed to send password reset email: {e}")
         return Response({
             'error': str(e),
-            'type': 'PasswordResetError',
-            'detail': 'Ensure FIREBASE_CREDENTIALS_JSON is updated on Railway.'
+            'type': 'EmailSendingError',
+            'detail': 'SMTP Timeout or Configuration Issue. Check Railway Environment Variables.',
+            'version': getattr(settings, 'BUILD_VERSION', 'local')
         }, status=500)
