@@ -13,7 +13,7 @@ import os
 # Note: Install razorpay with: pip install razorpay
 # For now, we'll create placeholder functions that can be integrated later
 
-db = firestore.client()
+
 
 @api_view(['POST'])
 def initiate_payment(request, book_id):
@@ -22,6 +22,7 @@ def initiate_payment(request, book_id):
     Creates a payment order and returns details for frontend
     """
     try:
+        db = firestore.client()
         if not hasattr(request, 'user_data'):
             return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         
@@ -72,6 +73,7 @@ def verify_payment(request, book_id):
     Verify payment and grant access to book
     """
     try:
+        db = firestore.client()
         if not hasattr(request, 'user_data'):
             return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         
@@ -126,6 +128,7 @@ def get_user_purchases(request):
     Get all purchases for the current user
     """
     try:
+        db = firestore.client()
         if not hasattr(request, 'user_data'):
             return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         
@@ -156,6 +159,7 @@ def get_my_library(request):
     Get all books accessible to the user (free + purchased)
     """
     try:
+        db = firestore.client()
         if not hasattr(request, 'user_data'):
             return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         
