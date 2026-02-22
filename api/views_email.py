@@ -70,7 +70,11 @@ Digital Library Team
         import traceback
         traceback.print_exc()
         logger.error(f"Failed to send email: {e}")
-        return Response({'error': str(e)}, status=500)
+        return Response({
+            'error': str(e),
+            'type': 'WelcomeEmailError',
+            'detail': 'Check Firebase credentials and SMTP settings on Railway.'
+        }, status=500)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -137,4 +141,8 @@ Digital Library Support Team
         import traceback
         traceback.print_exc()
         logger.error(f"Failed to send password reset email: {e}")
-        return Response({'error': str(e)}, status=500)
+        return Response({
+            'error': str(e),
+            'type': 'PasswordResetError',
+            'detail': 'Ensure FIREBASE_CREDENTIALS_JSON is updated on Railway.'
+        }, status=500)

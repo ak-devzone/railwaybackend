@@ -148,7 +148,10 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 30 * 1024 * 1024   # 30 MB
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    os.getenv('FRONTEND_URL', 'http://localhost:3000'),
+    os.getenv('FRONTEND_URL', 'https://library-systemm.web.app'),
+    'https://library-systemm.web.app',
+    'https://library-systemm.firebaseapp.com',
+    'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
