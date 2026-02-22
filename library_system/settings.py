@@ -28,6 +28,11 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') + [
     'evelia-umbrose-unmovingly.ngrok-free.dev', '.vercel.app', '.vercel.pub', '.railway.app', 'localhost', '127.0.0.1'
 ]
 
+# Configure Django to recognize HTTPS behind a proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
