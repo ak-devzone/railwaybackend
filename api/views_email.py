@@ -83,20 +83,14 @@ def send_password_reset_email(request):
         if not email:
             return Response({'error': 'Email is required'}, status=400)
 
-        # 1. Fetch User ID from Firestore
-        db = firestore.client()
-        users_ref = db.collection('users')
-        query = users_ref.where('email', '==', email).limit(1)
-        docs = query.get()
-
-        user_id = "User" # Fallback
-        
-        if docs:
-            user_data = docs[0].to_dict()
-            user_id = user_data.get('userId', 'User')
+        # 1. Fetch User Profile from MySQL
+        try:
+            from .models import UserProfile
+            user = UserProfile.objects.get(email=email)
+            user_id = user.student_id or "User"
             print(f"Found user {user_id} for email {email}")
-        else:
-            print(f"No user found in Firestore for email {email}")
+        except UserProfile.DoesNotExist:
+            print(f"No user found in MySQL for email {email}")
             return Response({
                 'error': 'This email is not registered with the Digital Library System.'
             }, status=404)

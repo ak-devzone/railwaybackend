@@ -33,7 +33,7 @@ Account Details:
 - Email: {email}
 - Role: Administrator
 
-You can login at: http://localhost:5173/admin/login
+You can login at: https://library-systemm.web.app/login
 
 If you have any questions or need assistance, please contact the system administrator.
 
@@ -49,6 +49,8 @@ Digital Library System Team
             fail_silently=False,
         )
         
+        print(f"Admin welcome email sent to {email}")
         return Response({'message': 'Welcome email sent successfully'})
     except Exception as e:
+        print(f"Error sending admin welcome email: {e}")
         return Response({'error': str(e)}, status=500)
