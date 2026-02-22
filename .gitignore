@@ -1,7 +1,47 @@
-node_modules
-firebase-credentials.json
-frontend/firebase-credentials.json
-*.json
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.pyc
+
+# Virtual Environments
+env/
+venv/
+ENV/
+.venv/
+
+# Environment variables (NEVER commit these)
 .env
+.env.local
+.env.production
+
+# Firebase credentials (NEVER commit these)
+firebase-credentials.json
+**/firebase-credentials.json
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+staticfiles_build/
+staticfiles/
+media/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build / deployment helpers (not needed in production)
 .env.example
 .env.example.celery
+build_files.sh
+
+# Logs
+*.log
