@@ -40,14 +40,6 @@ from .views_users import (
 from .views_admin import register_admin, get_admin_details
 from .views_files import serve_database_file
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def health_check(request):
-    return Response({
-        'status': 'healthy',
-        'version': getattr(settings, 'BUILD_VERSION', 'unknown'),
-        'database': 'connected'
-    })
 
 urlpatterns = [
     # Health check
