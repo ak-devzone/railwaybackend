@@ -52,7 +52,8 @@ Digital Library Team
         """
 
         # Send email
-        print("Sending mail now...")
+        print(f"DEBUG: Attempting to send email to {email} via {settings.EMAIL_HOST}:{settings.EMAIL_PORT}")
+        print(f"DEBUG: Using SSL: {settings.EMAIL_USE_SSL}, Using TLS: {settings.EMAIL_USE_TLS}")
         send_mail(
             subject,
             message,
@@ -125,6 +126,8 @@ Digital Library Support Team
 
         # 4. Send Email
         print("Sending password reset mail now...")
+        print(f"DEBUG: Attempting to send email to {email} via {settings.EMAIL_HOST}:{settings.EMAIL_PORT}")
+        print(f"DEBUG: Using SSL: {settings.EMAIL_USE_SSL}, Using TLS: {settings.EMAIL_USE_TLS}")
         send_mail(
             subject,
             message,
