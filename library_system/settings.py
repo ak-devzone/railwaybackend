@@ -9,6 +9,11 @@ import tempfile
 from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials
+import pymysql
+
+# Patch MySQL driver and fake version to satisfy Django 4.2+ requirement
+pymysql.version_info = (2, 2, 1, 'final', 0)
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -223,7 +228,7 @@ EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@digitallibrary.com')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Digital Library <noreplydigitallibrarysystemm@gmail.com>')
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@digitallibrary.com')
 
 # Celery Configuration
