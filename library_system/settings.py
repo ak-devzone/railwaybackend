@@ -168,6 +168,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://evelia-umbrose-unmovingly.ngrok-free.dev",
     'https://*.railway.app',
     'https://*.up.railway.app',
+    'https://library-systemm.web.app',
 ]
 
 # Allow iframe embedding
