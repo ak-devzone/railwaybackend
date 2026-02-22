@@ -16,18 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables
 load_dotenv(BASE_DIR / '.env')
 
-# Monkeypatch to support MariaDB 10.4 (XAMPP default) with Django 5+
-# Only applied when running against local XAMPP (not Railway)
-import os as _os
-_db_host = _os.getenv('DB_HOST', 'shortline.proxy.rlwy.net')
-if 'localhost' in _db_host or '127.0.0.1' in _db_host:
-    try:
-        from django.db.backends.mysql.base import DatabaseWrapper
-        DatabaseWrapper.check_database_version_supported = lambda self: None
-        from django.db.backends.mysql.features import DatabaseFeatures
-        DatabaseFeatures.can_return_columns_from_insert = False
-    except ImportError:
-        pass
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here-change-in-production')
