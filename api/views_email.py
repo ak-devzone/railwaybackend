@@ -1,10 +1,9 @@
-from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 import logging
-from firebase_admin import auth
+from firebase_admin import auth, firestore
 
 logger = logging.getLogger(__name__)
 
@@ -51,30 +50,31 @@ Best regards,
 Digital Library Team
         """
 
-        # Send email
-        print(f"DEBUG: Attempting to send email to {email} via {settings.EMAIL_HOST}:{settings.EMAIL_PORT}")
-        print(f"DEBUG: Using SSL: {settings.EMAIL_USE_SSL}, Using TLS: {settings.EMAIL_USE_TLS}")
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
-        )
-        print("----- Email sent successfully -----")
+        # Queue email in Firestore for "Trigger Email" extension
+        db = firestore.client()
+        db.collection('mail').add({
+            'to': [email],
+            'message': {
+                'subject': subject,
+                'text': message,
+                'html': message.replace('\n', '<br>')
+            },
+            'createdAt': firestore.SERVER_TIMESTAMP
+        })
+        print(f"----- Email queued in Firestore for {email} -----")
 
         return Response({'status': 'success', 'message': 'Email sent successfully'})
 
     except Exception as e:
-        print(f"!!!!! FAILED TO SEND EMAIL !!!!!")
+        print(f"!!!!! FAILED TO QUEUE EMAIL !!!!!")
         print(f"Error: {e}")
         import traceback
         traceback.print_exc()
-        logger.error(f"Failed to send email: {e}")
+        logger.error(f"Failed to queue email: {e}")
         return Response({
             'error': str(e),
             'type': 'EmailSendingError',
-            'detail': 'SMTP Timeout or Configuration Issue. Check Railway Environment Variables.',
+            'detail': 'Firestore Queueing Issue. Check Firebase credentials.',
             'version': getattr(settings, 'BUILD_VERSION', 'local')
         }, status=500)
 
@@ -124,30 +124,30 @@ Digital Library Support Team
 ⚠️ This is an automated message. Please do not reply to this email.
         """
 
-        # 4. Send Email
-        print("Sending password reset mail now...")
-        print(f"DEBUG: Attempting to send email to {email} via {settings.EMAIL_HOST}:{settings.EMAIL_PORT}")
-        print(f"DEBUG: Using SSL: {settings.EMAIL_USE_SSL}, Using TLS: {settings.EMAIL_USE_TLS}")
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
-        )
-        print("----- Password reset email sent successfully -----")
+        # Queue email in Firestore
+        db = firestore.client()
+        db.collection('mail').add({
+            'to': [email],
+            'message': {
+                'subject': subject,
+                'text': message,
+                'html': message.replace('\n', '<br>')
+            },
+            'createdAt': firestore.SERVER_TIMESTAMP
+        })
+        print(f"----- Password reset email queued in Firestore for {email} -----")
 
         return Response({'status': 'success', 'message': 'Password reset email sent'})
 
     except Exception as e:
-        print(f"!!!!! FAILED TO SEND PASSWORD RESET EMAIL !!!!!")
+        print(f"!!!!! FAILED TO QUEUE PASSWORD RESET EMAIL !!!!!")
         print(f"Error: {e}")
         import traceback
         traceback.print_exc()
-        logger.error(f"Failed to send password reset email: {e}")
+        logger.error(f"Failed to queue password reset email: {e}")
         return Response({
             'error': str(e),
             'type': 'EmailSendingError',
-            'detail': 'SMTP Timeout or Configuration Issue. Check Railway Environment Variables.',
+            'detail': 'Firestore Queueing Issue. Check Firebase credentials.',
             'version': getattr(settings, 'BUILD_VERSION', 'local')
         }, status=500)

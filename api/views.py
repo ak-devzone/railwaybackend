@@ -9,34 +9,22 @@ from rest_framework.response import Response
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_check(request):
-    import socket
-    smtp_diagnostics = {}
-    host = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-    
-    # 1. DNS Check
+    from firebase_admin import firestore
+    firestore_status = "unknown"
     try:
-        ips = socket.gethostbyname_ex(host)
-        smtp_diagnostics['dns_lookup'] = ips[2]
+        db = firestore.client()
+        # Try a simple read to verify connectivity
+        db.collection('mail').limit(1).get()
+        firestore_status = "connected"
     except Exception as e:
-        smtp_diagnostics['dns_lookup'] = f"Failed: {str(e)}"
-
-    # 2. Port Check (Wait 3s)
-    def check_port(p):
-        try:
-            with socket.create_connection((host, p), timeout=3):
-                return "OPEN"
-        except Exception as e:
-            return f"CLOSED ({str(e)})"
-            
-    smtp_diagnostics['port_465'] = check_port(465)
-    smtp_diagnostics['port_587'] = check_port(587)
+        firestore_status = f"error: {str(e)}"
 
     return Response({
         'status': 'healthy',
         'version': getattr(settings, 'BUILD_VERSION', 'unknown'),
         'database': 'connected',
-        'smtp_host': host,
-        'smtp_diagnostics': smtp_diagnostics
+        'firestore': firestore_status,
+        'email_system': 'firestore_queue'
     })
 
 @api_view(['POST'])
