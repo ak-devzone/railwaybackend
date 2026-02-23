@@ -13,34 +13,17 @@ logger = logging.getLogger(__name__)
 def send_welcome_email(request):
     print("----- Attempting to send email -----") # Debug log
     try:
-        from firebase_admin import firestore
-        db = firestore.client()
-        
         data = request.data
-        email_req = data.get('email')
-        name_req = data.get('name')
-        user_id_req = data.get('user_id') # student_id
-        department_req = data.get('department')
+        email = data.get('email')
+        name = data.get('name')
+        user_id = data.get('user_id')
+        department = data.get('department')
 
-        # 1. Fetch from Firestore (Source of truth)
-        print(f"DEBUG: Fetching user data from Firestore for email: {email_req}")
-        user_doc = None
-        if email_req:
-            users_ref = db.collection('users')
-            query = users_ref.where('email', '==', email_req).limit(1).stream()
-            docs = list(query)
-            if docs:
-                user_doc = docs[0].to_dict()
-                print(f"DEBUG: Found user in Firestore: {user_doc}")
-
-        # 2. Use Firestore data if available, otherwise fall back to request data
-        name = user_doc.get('name', name_req) if user_doc else name_req
-        user_id = user_doc.get('student_id', user_id_req) if user_doc else user_id_req
-        department = user_doc.get('department', department_req) if user_doc else department_req
-        email = user_doc.get('email', email_req) if user_doc else email_req
+        print(f"Target Email: {email}") # Debug log
+        print(f"User ID: {user_id}")    # Debug log
         
         if not email or not user_id:
-            print("Error: Missing email or user_id (even after Firestore lookup)")
+            print("Error: Missing email or user_id")
             return Response({'error': 'Email and User ID are required'}, status=400)
 
         subject = f'Welcome to Digital Library System - Your User ID: {user_id}'
@@ -80,11 +63,7 @@ Digital Library Team
         )
         print("----- Email sent successfully -----")
 
-        return Response({
-            'status': 'success', 
-            'message': 'Email sent successfully',
-            'fetched_from': 'firestore' if user_doc else 'request_data'
-        })
+        return Response({'status': 'success', 'message': 'Email sent successfully'})
 
     except Exception as e:
         print(f"!!!!! FAILED TO SEND EMAIL !!!!!")

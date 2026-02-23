@@ -419,7 +419,7 @@ def register_user(request):
         if UserProfile.objects.filter(uid=uid).exists():
              return JsonResponse({'error': 'User already registered'}, status=400)
 
-        # Create UserProfile in MySQL
+        # Create UserProfile
         user = UserProfile.objects.create(
             uid=uid,
             name=name,
@@ -430,26 +430,6 @@ def register_user(request):
             role='student',
             profile_completed=False # Pending ID proof upload
         )
-
-        # Sync with Firestore
-        try:
-            from firebase_admin import firestore
-            db = firestore.client()
-            db.collection('users').document(uid).set({
-                'name': name,
-                'email': email,
-                'mobile': mobile,
-                'department': department,
-                'student_id': student_id,
-                'role': 'student',
-                'is_suspended': False,
-                'profile_completed': False,
-                'createdAt': firestore.SERVER_TIMESTAMP
-            })
-            print(f"DEBUG: Successfully synced user {uid} to Firestore")
-        except Exception as fe:
-            logger.error(f"Error syncing user to Firestore: {fe}")
-            # We don't fail registration if Firestore sync fails, but we log it
         
         return JsonResponse({
             'success': True,
