@@ -8,10 +8,34 @@ from rest_framework.response import Response
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_check(request):
+    import socket
+    smtp_diagnostics = {}
+    host = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+    
+    # 1. DNS Check
+    try:
+        ips = socket.gethostbyname_ex(host)
+        smtp_diagnostics['dns_lookup'] = ips[2]
+    except Exception as e:
+        smtp_diagnostics['dns_lookup'] = f"Failed: {str(e)}"
+
+    # 2. Port Check (Wait 3s)
+    def check_port(p):
+        try:
+            with socket.create_connection((host, p), timeout=3):
+                return "OPEN"
+        except Exception as e:
+            return f"CLOSED ({str(e)})"
+            
+    smtp_diagnostics['port_465'] = check_port(465)
+    smtp_diagnostics['port_587'] = check_port(587)
+
     return Response({
         'status': 'healthy',
         'version': getattr(settings, 'BUILD_VERSION', 'unknown'),
-        'database': 'connected'
+        'database': 'connected',
+        'smtp_host': host,
+        'smtp_diagnostics': smtp_diagnostics
     })
 
 @api_view(['POST'])
