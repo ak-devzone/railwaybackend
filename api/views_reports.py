@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.core.mail import send_mail
+from firebase_admin import firestore
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -136,15 +136,17 @@ def send_admin_report(request):
         Login to the admin dashboard for detailed analytics.
         """
 
-        # Send email
-        send_mail(
-            subject='📊 Digital Library - Admin Analytics Report',
-            message=plain_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.ADMIN_EMAIL],
-            html_message=html_message,
-            fail_silently=False,
-        )
+        # Queue email in Firestore
+        db = firestore.client()
+        db.collection('mail').add({
+            'to': [settings.ADMIN_EMAIL],
+            'message': {
+                'subject': '📊 Digital Library - Admin Analytics Report',
+                'text': plain_message,
+                'html': html_message
+            },
+            'createdAt': firestore.SERVER_TIMESTAMP
+        })
 
         logger.info(f"Admin report sent successfully to {settings.ADMIN_EMAIL}")
         
