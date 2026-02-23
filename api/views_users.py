@@ -548,3 +548,29 @@ def sync_user(request):
             'success': False,
             'error': str(e)
         }, status=500)
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def delete_user(request, user_id):
+    """
+    Admin: Delete a user profile and all associated data.
+    Note: This only deletes from the local database, not Firebase.
+    """
+    try:
+        user = UserProfile.objects.get(uid=user_id)
+        user.delete()
+        return JsonResponse({
+            'success': True,
+            'message': f"User {user_id} and all associated records deleted successfully."
+        })
+    except UserProfile.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'User not found'
+        }, status=404)
+    except Exception as e:
+        logger.error(f"Error deleting user: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
