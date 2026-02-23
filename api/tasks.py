@@ -1,5 +1,6 @@
 from celery import shared_task
 from firebase_admin import firestore
+from django.core.mail import send_mail
 from django.conf import settings
 from datetime import datetime, timedelta
 import logging
@@ -151,16 +152,15 @@ def send_daily_admin_report():
         Login to the admin dashboard for detailed analytics.
         """
         
-        # Queue email in Firestore
-        db.collection('mail').add({
-            'to': [settings.ADMIN_EMAIL],
-            'message': {
-                'subject': f'📊 Daily Report - {today}',
-                'text': plain_message,
-                'html': html_message
-            },
-            'createdAt': firestore.SERVER_TIMESTAMP
-        })
+        # Send email
+        send_mail(
+            subject=f'📊 Daily Report - {today}',
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.ADMIN_EMAIL],
+            html_message=html_message,
+            fail_silently=False,
+        )
         
         logger.info(f"Daily report sent successfully for {today}")
         return f"Daily report sent: {total_sessions} sessions today"
@@ -319,16 +319,15 @@ def send_weekly_admin_report():
         Login to the admin dashboard for detailed analytics.
         """
         
-        # Queue email in Firestore
-        db.collection('mail').add({
-            'to': [settings.ADMIN_EMAIL],
-            'message': {
-                'subject': f'📊 Weekly Report - {week_ago_str} to {today_str}',
-                'text': plain_message,
-                'html': html_message
-            },
-            'createdAt': firestore.SERVER_TIMESTAMP
-        })
+        # Send email
+        send_mail(
+            subject=f'📊 Weekly Report - {week_ago_str} to {today_str}',
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.ADMIN_EMAIL],
+            html_message=html_message,
+            fail_silently=False,
+        )
         
         logger.info(f"Weekly report sent successfully for {week_ago_str} to {today_str}")
         return f"Weekly report sent: {total_sessions} sessions this week"
